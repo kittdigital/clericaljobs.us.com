@@ -13,6 +13,16 @@
 			" (" . mysqli_connect_errno() . ")"
 	 	);
 	}
+	
+	$state = "California";
+	
+	$stateQuery = "SELECT State FROM states WHERE Abbreviation ='" . $_GET["state"] . "'";
+	//echo $query;
+	$stateResult = mysqli_query($connection, $stateQuery);
+	
+	while($stateRow = mysqli_fetch_ASSOC($stateResult)) {
+		$state = $stateRow["State"];
+	}
 
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
@@ -81,10 +91,52 @@ src="http://gdc.indeed.com/ads/apiresults.js"></script>
 				<input type="submit" name="submit"  class="button" value="Search" /> 
 			</form>
 		</div>
+		
+		<div >
+			
+			<?php
+				$jobTitle = "Clerical";
+				
+				
+			   // echo $jobTitle;
+			   // echo $zipcode;
+			   
+			   $url = "http://api.indeed.com/ads/apisearch?publisher=8134512135661512&q=";
+			   $parameters = rawurlencode($jobTitle) . 
+					  "&l=" . $state . "&sort=&radius=&st=&jt=&start=&limit=&fromage=&filter=" .
+					  "&latlong=1&co=us&chnl=clericaljobs&userip=" .
+					  $_SERVER["REMOTE_ADDR"] . "&useragent=" .
+					  rawurlencode($_SERVER['HTTP_USER_AGENT']) . "&v=2";
+					  
+			   $finalURL = $url . $parameters;
+			   
+			   // echo $finalURL;
+			   echo "<br /><br />";
+					  
+			   $xml=simplexml_load_file($finalURL) or die("Error: Cannot create object");
+			   
+			   foreach ($xml->results->result as $result){
+			   		
+				    echo "<div class=\"job_listing_block\" style=\" height:200px; border:1px solid black; width:49%; position: relative;\">";
+			   		echo "<br /><b style=\"font-size:18px;\">" . $result->jobtitle . "</b><br />";
+					echo "<p><b>Company: </b>" . $result->company . ", " . $result->formattedLocation . "<p>";
+					echo "<p><b>Posted:</b> " . $result->formattedRelativeTime . "</p>";
+					echo "<p><br /><br /><i style=\"font-size:14px;\">" . $result->snippet . "</i></p>";
+					
+					echo "<div style=\"position: absolute; right:0; bottom:0;><a href=\"" . $result->url . "\"><img src=\"images/Apply-Button.jpg\" alt=\"\" style=\"float:right; margin:0px 10px 10px 0px;\" /></a></div>";
+					echo "</div>";
+					
+			   
+			   }
+			   // print_r($xml);
+			?>
+			
+		</div>
+		
 		<div class="listingBlock">
-			<p><h2><br />Search results for <?php echo $_POST["jobTitle"]?> positions in or near <?php echo $_POST["zipcode"]?> Zipcode</h2></p>
-			<p><br />Thank you for using our site today to search for <?php echo $_POST["jobTitle"]?> jobs.  The results of the search can be seen on the right.  Just click the link to find out more and apply!</p>
-			<p><br />If there is nothing suitable then we have thousands of other opportunities that could be of interest, use the links below to seach for other types of jobs in the same local area.</p>
+			<p><h2><br />The latest Clerical jobs in <?php echo $state ?> State.</h2></p>
+			<p><br />The most recent Clerical jobs in <?php echo $state ?> State are listed to the right.  </p>
+			<p><br />Clerical jobs are available all across <?php echo $state ?> in a range or different sized organizations.  From startup to Blue Chip, Government to Charities and more.  to make your clerical job search faster and easier, all open positions are listed by county and job. Simply navigate to the county in <?php echo $state ?> where you want to work and then click on your speciality.</p>
 			<p><br />
 				<?php
 					// 2. Perform database query
@@ -100,62 +152,15 @@ src="http://gdc.indeed.com/ads/apiresults.js"></script>
 					
 					// 3. Use returned data (if any)
 					while($row = mysqli_fetch_ASSOC($result)) {
-						// Output data from each row
-						//echo "<p style=\"font-size:16px;\"><a href=\"http://www.clericaljobs.us.com/jobs-by-position.php?ID=" . $row["ID"] . "\">" .
-							// $row["Title"] . 
-							// " jobs near " . 
-							// $_POST["zipcode"] .
-							// "</a></p>";	
+					
 							
-							echo "<a href=\"clerical-jobs-by-county.php?state=". $row["county"]. "\">" . $row["county"] . "</a>" . "        ";
-					}
-					
-					
-				?>
-			
+							echo "<div class=\"job_page_container\" style=\"font-size:16px; height:30px; width:50%;\"><a href=\"clerical-jobs-by-county.php?state=". $row["county"]. "\">" . $row["county"] . "</a></div>";
+					}	
+				?>			
 			</p>
 		</div>
-		<div class="listingBlock">
-			
-			<?php
-				$jobTitle = "Clerical";
-				$zipcode = $_POST["zipcode"];
-				
-				$stateQuery = "SELECT State FROM states WHERE Abbreviation ='" . $_GET["state"] . "'";
-				//echo $query;
-				$stateResult = mysqli_query($connection, $stateQuery);
-				
-			   // echo $jobTitle;
-			   // echo $zipcode;
-			   
-			   $url = "http://api.indeed.com/ads/apisearch?publisher=8134512135661512&q=";
-			   $parameters = rawurlencode($jobTitle) . 
-					  "&l=" . $stateResult["State"] . "&sort=&radius=&st=&jt=&start=&limit=&fromage=&filter=" .
-					  "&latlong=1&co=us&chnl=clericaljobs&userip=" .
-					  $_SERVER["REMOTE_ADDR"] . "&useragent=" .
-					  rawurlencode($_SERVER['HTTP_USER_AGENT']) . "&v=2";
-					  
-			   $finalURL = $url . $parameters;
-			   
-			   // echo $finalURL;
-			   echo "<br /><br />";
-					  
-			   $xml=simplexml_load_file($finalURL) or die("Error: Cannot create object");
-			   
-			   foreach ($xml->results->result as $result){
-			   
-			   		echo "<b style=\"font-size:18px;\">" . $result->jobtitle . "</b><br />";
-					echo "<b>Company: </b>" . $result->company . ", " . $result->formattedLocation . "<br />";
-					echo "<b>Posted:</b> " . $result->formattedRelativeTime . "<br /><br />";
-					echo "<i style=\"font-size:12px;\">" . $result->snippet . "</i><br /><br />";
-					echo "<p style=\"text-align:right; font-size:16px;\"><a href=\"" . $result->url . "\"><img src=\"images/Apply-Button.jpg\" alt=\"\" width=\"105\" height=\"27\" /></a></p>";
-					echo "<br /><hr><br />";
-			   
-			   }
-			   // print_r($xml);
-			?>
-			
-		</div>
+		
+		
 		<div id="blocks">																																																																																																																													
 			<div class="block">
 				<img src="images/title1.gif" alt="" width="214" height="29" /><br />

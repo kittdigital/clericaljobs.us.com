@@ -106,7 +106,7 @@ src="http://gdc.indeed.com/ads/apiresults.js"></script>
 							// $_POST["zipcode"] .
 							// "</a></p>";	
 							
-							echo "<a href=\"clerical-jobs-by-county.php?state=". $row["Abbreviation"]. "\">" . $row["State"] . " (". $row["Abbreviation"] . ")</a>" . "        ";
+							echo "<div class=\"job_page_container\" style=\"height:30px; width:33%;\"><a href=\"clerical-jobs-by-county.php?state=". $row["Abbreviation"]. "\">" . $row["State"] . " (". $row["Abbreviation"] . ")</a></div>";
 					}
 					
 					
